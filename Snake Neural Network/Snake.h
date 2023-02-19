@@ -7,8 +7,8 @@
 constexpr int WIDTH{ 700 };
 constexpr int HEIGHT{ 700 };
 
-constexpr int NB_CASE_WIDTH{30 / 700 * WIDTH};
-constexpr int NB_CASE_HEIGHT{30 / 700 * HEIGHT};
+constexpr int NB_CASE_WIDTH{static_cast<int>(30.f / 700 * WIDTH)};
+constexpr int NB_CASE_HEIGHT{static_cast<int>(30.f / 700 * HEIGHT)};
 
 class Snake
 {
@@ -18,7 +18,7 @@ private:
 	sf::RectangleShape m_head; // square of the head
 
 	// size of a body of the snake
-	sf::Vector2f m_size{ sf::Vector2f(0.02f * WIDTH, 0.02f * HEIGHT) };
+	sf::Vector2f m_size{ sf::Vector2f(1.f * WIDTH / NB_CASE_WIDTH, 1.f * HEIGHT / NB_CASE_HEIGHT) };
 
 	sf::Vector2f m_position;
 

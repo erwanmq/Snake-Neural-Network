@@ -12,8 +12,8 @@ void Fruit::setSize(sf::Vector2f size)
 }
 void Fruit::setRandomPosition()
 {
-	m_position = sf::Vector2f(std::rand() % (WIDTH - 2 * static_cast<int>(m_size.x) + 1) + m_size.x, std::rand() % (HEIGHT - 2 * static_cast<int>(m_size.y) + 1) + m_size.y);
-	m_fruit.setPosition(m_position);
+	m_position = sf::Vector2f(std::rand() % (NB_CASE_WIDTH + 1), std::rand() % (NB_CASE_HEIGHT + 1));
+	m_fruit.setPosition(sf::Vector2f(1.f * WIDTH / NB_CASE_WIDTH * m_position.x, 1.f * HEIGHT / NB_CASE_HEIGHT * m_position.y));
 }
 
 void Fruit::drawFruit(sf::RenderWindow& win, bool isFirst)

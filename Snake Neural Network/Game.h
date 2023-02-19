@@ -1,6 +1,7 @@
 #pragma once
 #include "Text.h"
 #include "Fruit.h"
+#include "Grid.h"
 #include <memory>
 
 class Game
@@ -31,6 +32,9 @@ private:
 
 	// number of generation
 	int m_generation{ 0 };
+
+	// grid of the game
+	Grid m_grid;
 	
 
 private:

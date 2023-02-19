@@ -7,7 +7,7 @@ int main()
     constexpr int MAIN_WINDOW_WIDTH{ 1500 };
     constexpr int MAIN_WINDOW_HEIGHT{ 1000 };
     sf::RenderWindow window(sf::VideoMode(MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT), "Snake Neural Network");
-    window.setFramerateLimit(20);
+    window.setFramerateLimit(2);
 
     srand((unsigned int)time(0)); // seed the random generator 
 

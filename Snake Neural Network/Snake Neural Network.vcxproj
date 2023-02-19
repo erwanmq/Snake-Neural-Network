@@ -135,6 +135,7 @@
   <ItemGroup>
     <ClCompile Include="Fruit.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="Grid.cpp" />
     <ClCompile Include="NeuralNetwork.cpp" />
     <ClCompile Include="Snake Neural Network.cpp" />
     <ClCompile Include="Snake.cpp" />
@@ -143,6 +144,7 @@
   <ItemGroup>
     <ClInclude Include="Fruit.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="Grid.h" />
     <ClInclude Include="NeuralNetwork.h" />
     <ClInclude Include="Snake.h" />
     <ClInclude Include="Text.h" />

@@ -187,7 +187,7 @@ void Game::setNewGeneration()
 		paired_vector[i].first.get()->setBiases(crossOverBiases(paired_vector[random2].first.get()->getBiases(), paired_vector[random1].first.get()->getBiases()));
 
 		paired_vector[i].first.get()->setWeigths(mutationWeights(paired_vector[i].first.get()->getWeigths()));
-		paired_vector[i].first.get()->setBiases(mutationBiases(paired_vector[i].first.get()->getBiases()));
+		//paired_vector[i].first.get()->setBiases(mutationBiases(paired_vector[i].first.get()->getBiases()));
 	}
 	
 	// reassign each value to the m_players vector
@@ -295,6 +295,8 @@ void Game::drawGame(sf::RenderWindow& win)
 		else
 			m_fruits[i].drawFruit(win, false);
 	}
+
+	m_grid.drawGrid(win);
 	//for(Fruit fruit: m_fruits)
 	//	fruit.drawFruit(win); // draw the fruits
 }
