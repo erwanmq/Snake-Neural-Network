@@ -31,7 +31,7 @@ private:
 	std::vector<int> m_step;
 
 	// number of generation
-	int m_generation{ 0 };
+	int m_generation{ 1 };
 
 	// grid of the game
 	Grid m_grid;

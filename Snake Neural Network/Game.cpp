@@ -6,7 +6,7 @@ Game::Game(int number_player)
 	:m_number_player{ number_player }
 {
 	// create a unique_ptr of the class Text
-	m_text_generation = std::make_unique<Text>(std::string("DejaVuSansMono.ttf"), sf::String("Génération : 0\nPopulation : " + std::to_string(m_number_player)), sf::Vector2f(WIDTH - 200.f, 30.f));
+	m_text_generation = std::make_unique<Text>(std::string("DejaVuSansMono.ttf"), sf::String("Génération : 1\nPopulation : " + std::to_string(m_number_player)), sf::Vector2f(WIDTH - 200.f, 30.f));
 
 	// these 6 calls resize the vector to the same number as the number of players 
 	m_snakes.resize(number_player);
@@ -24,6 +24,8 @@ Game::Game(int number_player)
 	// create a random position for the first fruit 
 	m_fruits[0].setSize(m_snakes[0].getSize());
 	m_fruits[0].setRandomPosition();
+	m_grid.addObjectToTheGrid(2, m_fruits[0].getPosition().x, m_fruits[0].getPosition().y);
+	
 
 	// all next fruits get the same value of the first (like that all fruits are in the same position)
 	for (int i{ 1 }; i < static_cast<int>(m_fruits.size()); i++)
@@ -119,7 +121,7 @@ Eigen::MatrixXd Game::getGameData(Snake& snake, int index)
 	// for each pixel from the head to the lower wall
 	for (int i{ static_cast<int>(snake.getHeadPosition().y) }; i <= HEIGHT; i++) // top side
 	{
-		if (HEIGHT - snake.getHeadPosition().y <=  2*snake.getSize().y)
+		if (HEIGHT - snake.getHeadPosition().y <=  3 * snake.getSize().y)
 			data.coeffRef(3) = 1;
 
 		if (i >= m_fruits[index].getPosition().y && snake.getHeadPosition().x >= m_fruits[index].getPosition().x &&
@@ -127,6 +129,7 @@ Eigen::MatrixXd Game::getGameData(Snake& snake, int index)
 			data.coeffRef(3) = 2;
 	}
 
+	std::cout << data << "\n\n";
 	// return the "input" MatrixXd
 	return data;
 }
@@ -174,7 +177,7 @@ void Game::setNewGeneration()
 	std::sort(paired_vector.begin(), paired_vector.end(), [](const auto& a, const auto& b) { return a.second > b.second; });
 
 	// crossOver the bests
-	for (int i{ 10 }; i < m_number_player; i++)
+	for (int i{ 20 }; i < m_number_player; i++)
 	{
 		int random1{ rand() % 11 };
 		int random2{};
@@ -187,7 +190,7 @@ void Game::setNewGeneration()
 		paired_vector[i].first.get()->setBiases(crossOverBiases(paired_vector[random2].first.get()->getBiases(), paired_vector[random1].first.get()->getBiases()));
 
 		paired_vector[i].first.get()->setWeigths(mutationWeights(paired_vector[i].first.get()->getWeigths()));
-		//paired_vector[i].first.get()->setBiases(mutationBiases(paired_vector[i].first.get()->getBiases()));
+		paired_vector[i].first.get()->setBiases(mutationBiases(paired_vector[i].first.get()->getBiases()));
 	}
 	
 	// reassign each value to the m_players vector
@@ -296,7 +299,7 @@ void Game::drawGame(sf::RenderWindow& win)
 			m_fruits[i].drawFruit(win, false);
 	}
 
-	m_grid.drawGrid(win);
+	//m_grid.drawGrid(win);
 	//for(Fruit fruit: m_fruits)
 	//	fruit.drawFruit(win); // draw the fruits
 }

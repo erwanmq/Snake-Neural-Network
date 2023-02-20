@@ -7,11 +7,11 @@ int main()
     constexpr int MAIN_WINDOW_WIDTH{ 1500 };
     constexpr int MAIN_WINDOW_HEIGHT{ 1000 };
     sf::RenderWindow window(sf::VideoMode(MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT), "Snake Neural Network");
-    window.setFramerateLimit(2);
+    window.setFramerateLimit(1);
 
     srand((unsigned int)time(0)); // seed the random generator 
 
-    Game game(20); // create a game with 100 players
+    Game game(1); // create a game with 100 players
 
     sf::RectangleShape black_background;
     black_background.setSize(sf::Vector2f(WIDTH, HEIGHT));
