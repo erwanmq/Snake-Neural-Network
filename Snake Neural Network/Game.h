@@ -2,6 +2,8 @@
 #include "Text.h"
 #include "Fruit.h"
 #include "Grid.h"
+#include "Snake.h"
+#include "NeuralNetwork.h"
 #include <memory>
 
 class Game
@@ -16,7 +18,7 @@ private:
 
 	// these 2 variables keep track of each player (they are neural networks)
 	std::vector<std::unique_ptr<NeuralNetwork>> m_players;
-	std::vector<int> m_player_layers{ 4, 120, 120, 120, 4 }; // 4 entries for the 4 directions. 0 if nothing, 1 if wall and 2 if fruit
+	std::vector<int> m_player_layers{ 4, 500, 500, 500, 500, 4 }; // 4 entries for the 4 directions. 0 if nothing, 1 if wall and 2 if fruit
 
 	// pointer to the Text class to print the score to the game
 	std::unique_ptr<Text> m_text_generation;
@@ -34,7 +36,7 @@ private:
 	int m_generation{ 1 };
 
 	// grid of the game
-	Grid m_grid;
+	std::vector<Grid> m_grid;
 	
 
 private:

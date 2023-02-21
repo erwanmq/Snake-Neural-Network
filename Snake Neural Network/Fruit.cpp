@@ -2,7 +2,7 @@
 
 Fruit::Fruit()
 {
-	m_fruit.setFillColor(sf::Color::Red);
+	m_fruit.setFillColor(sf::Color::Blue);
 }
 
 void Fruit::setSize(sf::Vector2f size)
@@ -12,8 +12,8 @@ void Fruit::setSize(sf::Vector2f size)
 }
 void Fruit::setRandomPosition()
 {
-	m_position = sf::Vector2f(std::rand() % (NB_CASE_WIDTH + 1), std::rand() % (NB_CASE_HEIGHT + 1));
-	m_fruit.setPosition(sf::Vector2f(1.f * WIDTH / NB_CASE_WIDTH * m_position.x, 1.f * HEIGHT / NB_CASE_HEIGHT * m_position.y));
+	m_position = sf::Vector2f(static_cast<float>( 1 + (std::rand()) % (NB_CASE_WIDTH - 2)), static_cast<float>( 1 + (std::rand()) % (NB_CASE_HEIGHT - 2)));
+	m_fruit.setPosition(sf::Vector2f(CONV_CASE_WIDTH * m_position.x, CONV_CASE_HEIGHT * m_position.y));
 }
 
 void Fruit::drawFruit(sf::RenderWindow& win, bool isFirst)
@@ -21,12 +21,12 @@ void Fruit::drawFruit(sf::RenderWindow& win, bool isFirst)
 	if (!isFirst)
 	{
 		// draw the snake transparent
-		m_fruit.setFillColor(sf::Color(255, 0, 0, 20));
+		m_fruit.setFillColor(sf::Color(0, 0, 255, 20));
 		win.draw(m_fruit);
 	}
 	else // if the snake is first, draw it completly
 	{
-		m_fruit.setFillColor(sf::Color(255, 0, 0, 255));
+		m_fruit.setFillColor(sf::Color(0, 0, 255, 255));
 		win.draw(m_fruit);
 	}
 }

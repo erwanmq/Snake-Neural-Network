@@ -90,6 +90,14 @@ void NeuralNetwork::setBiases(std::vector<Eigen::VectorXd> new_biases)
 	m_biases = new_biases;
 }
 
+void NeuralNetwork::init()
+{
+	m_weights.clear();
+	m_biases.clear();
+	initWeights();
+	initBiases();
+}
+
 
 void NeuralNetwork::forwardPropagation(const Eigen::MatrixXd& input)
 {

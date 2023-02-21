@@ -1,12 +1,28 @@
 #include "Snake.h"
+#include <iostream>
+
+void Snake::setPosition()
+{
+	for (int i{ static_cast<int>(m_body.size()) - 1 }; i > 0; i--)
+	{
+		// set the position on the next body
+		m_body[i].setPosition(m_body[i - 1].getPosition());
+	}
+	// set the first square of the body on the head	
+	m_body[0].setPosition(m_head.getPosition());
+	// set the body one square away to the direction choose
+	m_position = sf::Vector2f(m_position.x + m_direction.x, m_position.y + m_direction.y);
+	m_head.setPosition(sf::Vector2f(CONV_CASE_WIDTH * m_position.x, CONV_CASE_HEIGHT * m_position.y));
+}
 
 Snake::Snake()
 {
 	// initialise the head
 	m_head.setFillColor(sf::Color::Red);
 	m_head.setSize(m_size);
-	//m_head.setOrigin(sf::Vector2f(m_head.getSize().x / 2, m_head.getSize().y / 2));
-	m_head.setPosition(sf::Vector2f(1.f * WIDTH / NB_CASE_WIDTH * 15, 1.f * HEIGHT / NB_CASE_HEIGHT * 15));
+
+	m_position = sf::Vector2f(15, 15);
+	m_head.setPosition(sf::Vector2f(CONV_CASE_WIDTH * m_position.x, CONV_CASE_HEIGHT * m_position.y));
 
 	// default number of body => 4 squares
 	m_body.resize(4);
@@ -16,12 +32,12 @@ Snake::Snake()
 		// set the size and color
 		m_body[i].setSize(m_size);
 		m_body[i].setFillColor(sf::Color::Yellow);
-		//m_body[i].setOrigin(sf::Vector2f(m_body[i].getSize().x / 2, m_body[i].getSize().y / 2));
+
 		// if it is the first, the position is behind the head
 		if (i == 0)
-			m_body[i].setPosition(sf::Vector2f(m_head.getPosition().x - m_head.getSize().x, m_head.getPosition().y));
+			m_body[i].setPosition(sf::Vector2f(m_head.getPosition().x - m_size.x, m_head.getPosition().y ));
 		else // the nexts are just behind the previous body
-			m_body[i].setPosition(sf::Vector2f(m_body[i - 1].getPosition().x - m_body[i - 1].getSize().x, m_body[i - 1].getPosition().y));
+			m_body[i].setPosition(sf::Vector2f(m_body[i - 1].getPosition().x - m_size.x, m_body[i - 1].getPosition().y));
 	}
 }
 
@@ -32,10 +48,30 @@ bool Snake::isThereHisBody()
 	return true;
 }
 
+Direction Snake::getDirection()
+{
+	return m_currentDir;
+}
+
+std::vector<sf::Vector2f> Snake::getAllBodyPosition()
+{
+	std::vector<sf::Vector2f> temp;
+
+	temp.push_back(m_position);
+	for (const auto& body : m_body)
+	{
+		temp.push_back(sf::Vector2f(static_cast<int>(body.getPosition().x / CONV_CASE_WIDTH), static_cast<int>(body.getPosition().y / CONV_CASE_HEIGHT)));
+	}
+		
+
+	return temp;		
+}
+
 void Snake::movements(Direction dir)
 {
+	m_currentDir = dir;
 	// change the value of m_direction thanks to the enumerator
-	switch (dir)
+	switch (m_currentDir)
 	{
 	case Direction::TOP:
 		if (m_direction.y != 1)
@@ -67,15 +103,9 @@ void Snake::movements(Direction dir)
 void Snake::update()
 {
 	// update the lasts body before the firsts 
-	for (int i{ static_cast<int>(m_body.size()) - 1 }; i > 0; i--)
-	{
-		// set the position on the next body
-		m_body[i].setPosition(m_body[i - 1].getPosition());
-	}
-	// set the first square of the body on the head	
-	m_body[0].setPosition(m_head.getPosition());
-	// set the body one square away to the direction choose
-	m_head.setPosition(sf::Vector2f(m_head.getPosition().x + m_direction.x * m_size.x, m_head.getPosition().y + m_direction.y * m_size.y));
+	
+	setPosition();
+	
 }
 
 void Snake::draw(sf::RenderWindow& win, bool isFirst)
@@ -114,7 +144,6 @@ bool Snake::isHeadInBody()
 		if (m_head.getPosition() == body.getPosition())
 			return true;
 	}
-
 	return false;
 }
 
@@ -122,7 +151,6 @@ void Snake::addBody()
 {
 	sf::RectangleShape body_temp(m_size);
 	body_temp.setFillColor(sf::Color::White);
-	//body_temp.setOrigin(sf::Vector2f(body_temp.getSize().x / 2, body_temp.getSize().y / 2));
 
 	body_temp.setPosition(sf::Vector2f(m_body.back().getPosition().x + m_direction.x * m_size.x, m_body.back().getPosition().y + m_direction.y * m_size.y));
 	m_body.push_back(body_temp);

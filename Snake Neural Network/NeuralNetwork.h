@@ -1,16 +1,11 @@
 #pragma once
+#include "Value.h"
+
 #include <Eigen/Dense>
 #include <vector>
 #include <random>
 
-// enumerator to keep track of each direction
-enum class Direction
-{
-	RIGHT,
-	LEFT,
-	TOP,
-	BOTTOM
-};
+
 
 class NeuralNetwork
 {
@@ -35,6 +30,7 @@ public:
 	NeuralNetwork(const NeuralNetwork& other);
 	~NeuralNetwork();
 	
+	
 
 	Direction findDirection(Eigen::MatrixXd input);
 
@@ -44,6 +40,8 @@ public:
 
 	void setWeigths(std::vector<Eigen::MatrixXd> new_weights);
 	void setBiases(std::vector<Eigen::VectorXd> new_biases);
+
+	void init();
 
 	
 	

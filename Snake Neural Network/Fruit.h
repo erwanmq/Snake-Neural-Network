@@ -1,5 +1,5 @@
 #pragma once
-#include "Snake.h"
+#include "Value.h"
 
 class Fruit
 {
