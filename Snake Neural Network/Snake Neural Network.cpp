@@ -11,7 +11,7 @@ int main()
 
     srand((unsigned int)time(0)); // seed the random generator 
 
-    Game game(50); // create a game with 100 players
+    Game game(500); // create a game with 100 players
 
     sf::RectangleShape black_background;
     black_background.setSize(sf::Vector2f(WIDTH, HEIGHT));
