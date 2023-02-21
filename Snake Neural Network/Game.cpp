@@ -83,19 +83,19 @@ Eigen::MatrixXd Game::getGameData(Snake& snake, int index)
 
 	int pos_x = static_cast<int>(snake.getHead().getPosition().x / CONV_CASE_WIDTH);
 	int pos_y = static_cast<int>(snake.getHead().getPosition().y / CONV_CASE_HEIGHT);
-	if (m_grid[index].isThereAWall(pos_x, pos_y, Direction::RIGHT) && snake.getDirection() != Direction::LEFT)
+	if (m_grid[index].isThereAWall(pos_x, pos_y, Direction::RIGHT))
 	{
 		data(0) = 1;
 	}
-	if (m_grid[index].isThereAWall(pos_x, pos_y, Direction::LEFT) && snake.getDirection() != Direction::RIGHT)
+	if (m_grid[index].isThereAWall(pos_x, pos_y, Direction::LEFT))
 	{
 		data(1) = 1;
 	}
-	if (m_grid[index].isThereAWall(pos_x, pos_y, Direction::TOP) && snake.getDirection() != Direction::BOTTOM)
+	if (m_grid[index].isThereAWall(pos_x, pos_y, Direction::TOP))
 	{
 		data(2) = 1;
 	}
-	if (m_grid[index].isThereAWall(pos_x, pos_y, Direction::BOTTOM) && snake.getDirection() != Direction::TOP)
+	if (m_grid[index].isThereAWall(pos_x, pos_y, Direction::BOTTOM))
 	{
 		data(3) = 1;
 	}
@@ -115,6 +115,23 @@ Eigen::MatrixXd Game::getGameData(Snake& snake, int index)
 	if (m_grid[index].isThereAFruit(pos_x, pos_y, Direction::BOTTOM))
 	{
 		data(3) = 2;
+	}
+
+	if (m_grid[index].isThereMyBody(pos_x, pos_y, Direction::RIGHT) && snake.getDirection() != Direction::LEFT)
+	{
+		data(0) = 3;
+	}
+	if (m_grid[index].isThereMyBody(pos_x, pos_y, Direction::LEFT) && snake.getDirection() != Direction::RIGHT)
+	{
+		data(1) = 3;
+	}
+	if (m_grid[index].isThereMyBody(pos_x, pos_y, Direction::TOP) && snake.getDirection() != Direction::BOTTOM)
+	{
+		data(2) = 3;
+	}
+	if (m_grid[index].isThereMyBody(pos_x, pos_y, Direction::BOTTOM) && snake.getDirection() != Direction::TOP)
+	{
+		data(3) = 3;
 	}
 
 	// return the "input" MatrixXd
@@ -233,7 +250,7 @@ void Game::update()
 		if (!checkLost(m_snakes[i]) && m_step[i] <= 200)
 		{
 			for (const auto& position : m_snakes[i].getAllBodyPosition())
-				m_grid[i].addObjectInTheGrid(1, static_cast<int>(position.x), static_cast<int>(position.y));
+				m_grid[i].addObjectInTheGrid(3, static_cast<int>(position.x), static_cast<int>(position.y));
 			m_grid[i].addObjectInTheGrid(2, static_cast<int>(m_fruits[i].getPosition().x), static_cast<int>(m_fruits[i].getPosition().y));
 
 

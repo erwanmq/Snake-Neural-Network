@@ -107,6 +107,30 @@ bool Grid::isThereAFruit(int column, int line, Direction dir)
 	return false;
 }
 
+bool Grid::isThereMyBody(int column, int line, Direction dir)
+{
+	switch (dir)
+	{
+	case Direction::RIGHT:
+		if (m_objects[column + 1][line] == 3)
+			return true;
+		break;
+	case Direction::LEFT:
+		if (m_objects[column - 1][line] == 3)
+			return true;
+		break;
+	case Direction::TOP:
+		if (m_objects[column][line - 1] == 3)
+			return true;
+		break;
+	case Direction::BOTTOM:
+		if (m_objects[column][line + 1] == 3)
+			return true;
+		break;
+	}
+	return false;
+}
+
 void Grid::drawGrid(sf::RenderWindow& win)
 {
 	for (const auto& line : m_lines)

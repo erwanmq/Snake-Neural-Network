@@ -18,6 +18,7 @@ public:
 
 	bool isThereAWall(int column, int line, Direction dir);
 	bool isThereAFruit(int column, int line, Direction dir);
+	bool isThereMyBody(int column, int line, Direction dir);
 
 	void drawGrid(sf::RenderWindow& win);
 	void initObjectsGrid();
