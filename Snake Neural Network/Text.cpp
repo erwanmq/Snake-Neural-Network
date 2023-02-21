@@ -7,6 +7,7 @@ Text::Text(std::string font_file, sf::String text, sf::Vector2f position)
 	m_text.setFont(m_font);
 	m_text.setString(text);
 	m_text.setPosition(position);
+	m_text.setFillColor(sf::Color::Black);
 	m_text.setScale(sf::Vector2f(0.5f, 0.5f));
 }
 

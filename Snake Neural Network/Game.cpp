@@ -6,7 +6,8 @@ Game::Game(int number_player)
 	:m_number_player{ number_player }
 {
 	// create a unique_ptr of the class Text
-	m_text_generation = std::make_unique<Text>(std::string("DejaVuSansMono.ttf"), sf::String("Génération : 1\nPopulation : " + std::to_string(m_number_player)), sf::Vector2f(WIDTH - 200.f, 30.f));
+	m_text_generation = std::make_unique<Text>(std::string("DejaVuSansMono.ttf"), sf::String("Génération : 1\nPopulation : " + std::to_string(m_number_player)
+		+ "\nBest score: 0"), sf::Vector2f(WIDTH + 20.f, 30.f));
 
 	// these 7 calls resize the vector to the same number as the number of players 
 	m_snakes.resize(number_player);
@@ -184,12 +185,15 @@ void Game::setNewGeneration()
 	std::sort(paired_vector.begin(), paired_vector.end(), [](const auto& a, const auto& b) { return a.second > b.second; });
 
 	// crossOver the bests
-	for (int i{ 10 }; i < m_number_player - 10; i++)
+	int best{ static_cast<int>(m_number_player * 0.1f) };
+	int new_player{ static_cast<int>(m_number_player * 0.2f) };
+
+	for (int i{ best }; i < m_number_player - new_player; i++)
 	{
-		int random1{ rand() % 11 };
+		int random1{ rand() % (best + 1) };
 		int random2{};
 		do {
-			random2 = rand() % 11;
+			random2 = rand() % (best + 1);
 		} while (random2 == random1);
 		
 		paired_vector[i].first.get()->setWeigths(crossOverWeights(paired_vector[random2].first.get()->getWeigths(), paired_vector[random1].first.get()->getWeigths()));
@@ -198,7 +202,7 @@ void Game::setNewGeneration()
 		paired_vector[i].first.get()->setWeigths(mutationWeights(paired_vector[i].first.get()->getWeigths()));
 		paired_vector[i].first.get()->setBiases(mutationBiases(paired_vector[i].first.get()->getBiases()));
 	}
-	for (int i{ m_number_player - 10 }; i < m_number_player; i++)
+	for (int i{ m_number_player - new_player }; i < m_number_player; i++)
 	{
 		paired_vector[i].first.get()->init();
 	}
@@ -288,7 +292,10 @@ void Game::update()
 	// each time the function is called and after all movements, search for the first snake of the game
 	m_index_first_snake = static_cast<int>(std::distance(m_points.begin(), std::max_element(m_points.begin(), m_points.end())));
 	// and print his score
-	m_text_generation->setString(sf::String("Génération : " + std::to_string(m_generation) + "\nPopulation : " + std::to_string(m_number_player)));
+	if (m_best_score <= m_points[m_index_first_snake])
+		m_best_score = m_points[m_index_first_snake];
+	m_text_generation->setString(sf::String("Génération : " + std::to_string(m_generation) + "\nPopulation : " + std::to_string(m_number_player)
+	+ "\nBest score: " + std::to_string(m_best_score)));
 }
 
 void Game::drawGame(sf::RenderWindow& win)
@@ -296,20 +303,17 @@ void Game::drawGame(sf::RenderWindow& win)
 	// for each snake of the game
 	for (int i{ 0 }; i < static_cast<int>(m_snakes.size()); i++)
 	{
-		if (i == static_cast<int>(m_index_first_snake))
+		if (!m_lost[i])
 			m_snakes[i].draw(win, true);
-		else
-			m_snakes[i].draw(win, false);
 	}
 		
 	m_text_generation->drawText(win); // draw the text
 
 	for (int i{ 0 }; i < static_cast<int>(m_fruits.size()); i++)
 	{
-		if (i == static_cast<int>(m_index_first_snake))
+		if (!m_lost[i])
 			m_fruits[i].drawFruit(win, true);
-		else
-			m_fruits[i].drawFruit(win, false);
+
 	}
 
 	//m_grid[0].drawGrid(win);

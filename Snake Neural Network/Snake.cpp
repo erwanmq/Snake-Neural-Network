@@ -21,7 +21,7 @@ Snake::Snake()
 	m_head.setFillColor(sf::Color::Red);
 	m_head.setSize(m_size);
 
-	m_position = sf::Vector2f(15, 15);
+	m_position = sf::Vector2f(static_cast<float>(NB_CASE_WIDTH / 2), static_cast<float>(NB_CASE_HEIGHT / 2));
 	m_head.setPosition(sf::Vector2f(CONV_CASE_WIDTH * m_position.x, CONV_CASE_HEIGHT * m_position.y));
 
 	// default number of body => 4 squares
