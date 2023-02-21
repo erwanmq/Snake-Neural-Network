@@ -16,19 +16,9 @@ void Fruit::setRandomPosition()
 	m_fruit.setPosition(sf::Vector2f(CONV_CASE_WIDTH * m_position.x, CONV_CASE_HEIGHT * m_position.y));
 }
 
-void Fruit::drawFruit(sf::RenderWindow& win, bool isFirst)
+void Fruit::drawFruit(sf::RenderWindow& win)
 {
-	if (!isFirst)
-	{
-		// draw the snake transparent
-		m_fruit.setFillColor(sf::Color(0, 0, 255, 20));
-		win.draw(m_fruit);
-	}
-	else // if the snake is first, draw it completly
-	{
-		m_fruit.setFillColor(sf::Color(0, 0, 255, 255));
-		win.draw(m_fruit);
-	}
+	win.draw(m_fruit);
 }
 
 const sf::Vector2f Fruit::getPosition() { return m_position; }

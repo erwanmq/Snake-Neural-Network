@@ -30,7 +30,7 @@ public:
 
 	void movements(Direction dir);
 	void update();
-	void draw(sf::RenderWindow& win, bool isFirst);
+	void draw(sf::RenderWindow& win);
 	bool isHeadInBody();
 	void addBody();
 	const sf::Vector2f getSize();

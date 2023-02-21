@@ -251,7 +251,7 @@ void Game::update()
 	{
 		m_grid[i].initObjectsGrid();
 		// check if the snake not lost
-		if (!checkLost(m_snakes[i]) && m_step[i] <= 200)
+		if (!checkLost(m_snakes[i]) && m_step[i] <= 200 && !m_lost[i])
 		{
 			for (const auto& position : m_snakes[i].getAllBodyPosition())
 				m_grid[i].addObjectInTheGrid(3, static_cast<int>(position.x), static_cast<int>(position.y));
@@ -278,7 +278,7 @@ void Game::update()
 			}
 			m_step[i]++;
 		}
-		else // if the snake lost
+		else if(!m_lost[i]) // if the snake lost
 		{
 			m_points[i]--;
 			m_lost[i] = true; // turn to true the value and the snake can't move anymore
@@ -304,7 +304,7 @@ void Game::drawGame(sf::RenderWindow& win)
 	for (int i{ 0 }; i < static_cast<int>(m_snakes.size()); i++)
 	{
 		if (!m_lost[i])
-			m_snakes[i].draw(win, true);
+			m_snakes[i].draw(win);
 	}
 		
 	m_text_generation->drawText(win); // draw the text
@@ -312,7 +312,7 @@ void Game::drawGame(sf::RenderWindow& win)
 	for (int i{ 0 }; i < static_cast<int>(m_fruits.size()); i++)
 	{
 		if (!m_lost[i])
-			m_fruits[i].drawFruit(win, true);
+			m_fruits[i].drawFruit(win);
 
 	}
 

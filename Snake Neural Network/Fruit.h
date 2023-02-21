@@ -13,7 +13,7 @@ public:
 
 	void setSize(sf::Vector2f size);
 	void setRandomPosition();
-	void drawFruit(sf::RenderWindow& win, bool isFirst);
+	void drawFruit(sf::RenderWindow& win);
 	const sf::Vector2f getPosition();
 	const sf::Vector2f getSize();
 	const sf::RectangleShape getFruit();

@@ -31,7 +31,7 @@ Snake::Snake()
 	{
 		// set the size and color
 		m_body[i].setSize(m_size);
-		m_body[i].setFillColor(sf::Color::Yellow);
+		m_body[i].setFillColor(sf::Color::White);
 
 		// if it is the first, the position is behind the head
 		if (i == 0)
@@ -108,32 +108,13 @@ void Snake::update()
 	
 }
 
-void Snake::draw(sf::RenderWindow& win, bool isFirst)
+void Snake::draw(sf::RenderWindow& win)
 {
-	// if the snake isn't the first of the game
-	if (!isFirst)
+	win.draw(m_head);
+	for (sf::RectangleShape& body : m_body)
 	{
-		// draw the snake transparent
-		m_head.setFillColor(sf::Color(255, 0, 0, 20));
-		win.draw(m_head);
-		for (sf::RectangleShape& body : m_body)
-		{
-			body.setFillColor(sf::Color(255, 255, 255, 20));
-			win.draw(body);
-		}
-	}
-	else // if the snake is first, draw it completly
-	{
-		m_head.setFillColor(sf::Color(255, 0, 0, 255));
-		win.draw(m_head);
-		for (sf::RectangleShape& body : m_body)
-		{
-			body.setFillColor(sf::Color(255, 255, 255, 255));
-			win.draw(body);
-		}
-			
-	}
-		
+		win.draw(body);
+	}		
 	
 }
 
