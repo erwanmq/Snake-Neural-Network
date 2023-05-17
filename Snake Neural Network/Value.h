@@ -15,8 +15,8 @@ enum class Direction
 constexpr int WIDTH{ 700 };
 constexpr int HEIGHT{ 700 };
 
-constexpr int NB_CASE_WIDTH{ 30 };
-constexpr int NB_CASE_HEIGHT{ 30 };
+constexpr int NB_CASE_WIDTH{ 15 };
+constexpr int NB_CASE_HEIGHT{ 15 };
 
 constexpr float CONV_CASE_WIDTH{ 1.f * WIDTH / NB_CASE_WIDTH };
 constexpr float CONV_CASE_HEIGHT{ 1.f * HEIGHT / NB_CASE_HEIGHT };

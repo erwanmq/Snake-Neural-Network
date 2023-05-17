@@ -22,5 +22,6 @@ public:
 
 	void drawGrid(sf::RenderWindow& win);
 	void initObjectsGrid();
+	void printGrid();
 };
 

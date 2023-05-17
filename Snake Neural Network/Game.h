@@ -18,13 +18,13 @@ private:
 
 	// these 2 variables keep track of each player (they are neural networks)
 	std::vector<std::unique_ptr<NeuralNetwork>> m_players;
-	std::vector<int> m_player_layers{ 4, 18, 18, 4 }; // 4 entries for the 4 directions. 0 if nothing, 1 if wall and 2 if fruit
+	std::vector<int> m_player_layers{ 12, 8, 8, 4 }; // 4 entries for the 4 directions. 0 if nothing, 1 if wall and 2 if fruit
 
 	// pointer to the Text class to print the score to the game
 	std::unique_ptr<Text> m_text_generation;
 	
 	// variable that stores the number of player
-	int m_number_player;
+	int m_number_population;
 	// iterator of the best snake of the current game
 	int m_index_first_snake;
 

@@ -1,5 +1,6 @@
 #include "Grid.h"
 #include "Text.h"
+#include <iostream>
 
 void Grid::initObjectsGrid()
 {
@@ -129,6 +130,19 @@ bool Grid::isThereMyBody(int column, int line, Direction dir)
 		break;
 	}
 	return false;
+}
+
+void Grid::printGrid()
+{
+	std::cout << "\n\n\n";
+	for (int i{ 0 }; i < m_objects.size(); i++)
+	{
+		for (int j{ 0 }; j < m_objects[i].size(); j++)
+		{
+			std::cout << m_objects[i][j] << " | ";
+		}
+		std::cout << '\n';
+	}
 }
 
 void Grid::drawGrid(sf::RenderWindow& win)

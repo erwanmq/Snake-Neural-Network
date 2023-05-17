@@ -2,36 +2,38 @@
 #include <iostream>
 
 
-Game::Game(int number_player)
-	:m_number_player{ number_player }
+Game::Game(int number_population)
+	:m_number_population{ number_population }
 {
 	// create a unique_ptr of the class Text
-	m_text_generation = std::make_unique<Text>(std::string("DejaVuSansMono.ttf"), sf::String("Génération : 1\nPopulation : " + std::to_string(m_number_player)
+	m_text_generation = std::make_unique<Text>(std::string("DejaVuSansMono.ttf"), sf::String("Génération : 1\nPopulation: 1/" + std::to_string(m_number_population)
 		+ "\nBest score: 0"), sf::Vector2f(WIDTH + 20.f, 30.f));
 
 	// these 7 calls resize the vector to the same number as the number of players 
-	m_snakes.resize(number_player);
-	m_players.resize(number_player);
-	m_lost.resize(number_player);
-	m_points.resize(number_player);
-	m_fruits.resize(number_player);
-	m_step.resize(number_player);
-	m_grid.resize(number_player);
+	m_snakes.resize(number_population);
+	m_players.resize(number_population);
+	m_lost.resize(number_population);
+	m_points.resize(number_population);
+	m_fruits.resize(number_population);
+	m_step.resize(number_population);
+	m_grid.resize(number_population);
 
 	// fill m_lost, m_points and m_step to false, 0 and 0 respectively
 	std::fill(m_lost.begin(), m_lost.end(), false);
 	std::fill(m_points.begin(), m_points.end(), 0);
 	std::fill(m_step.begin(), m_step.end(), 0);
-
-	// create a random position for the first fruit 
-	m_fruits[0].setSize(m_snakes[0].getSize());
-	m_fruits[0].setRandomPosition();
 	
 
-	// all next fruits get the same value of the first (like that all fruits are in the same position)
-	for (int i{ 1 }; i < static_cast<int>(m_fruits.size()); i++)
+	
+	for (int i{ 0 }; i < static_cast<int>(m_fruits.size()); i++)
 	{
-		m_fruits[i] = m_fruits[0];
+		m_fruits[i].setSize(m_snakes[0].getSize());
+		m_fruits[i].setRandomPosition();
+		// We don't want that the fruit spawn the front of the snake's head.
+		while (m_fruits[i].getPosition().y == m_snakes[i].getPosition().y && m_fruits[i].getPosition().x >= m_snakes[i].getPosition().x)
+		{
+			m_fruits[i].setRandomPosition();
+		}
 	}
 	
 	// initialise all players to a unique_ptr of Neural Network 
@@ -78,9 +80,9 @@ bool Game::checkWall(Snake& snake)
 // function that return a MatrixXd that stores the different values of the different directions of the snake
 Eigen::MatrixXd Game::getGameData(Snake& snake, int index)
 {
-	Eigen::MatrixXd data(4, 1); // create a matrix of (4, 1) (4 directions)
+	Eigen::MatrixXd data(12, 1); // create a matrix of (4, 1) (4 directions)
 	// supposed there is nothing (all 0)
-	data << 0, 0, 0, 0; // right side, left side, top side, bot side
+	data << 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0; // right side, left side, top side, bot side for walls, fruits, tail
 
 	int pos_x = static_cast<int>(snake.getHead().getPosition().x / CONV_CASE_WIDTH);
 	int pos_y = static_cast<int>(snake.getHead().getPosition().y / CONV_CASE_HEIGHT);
@@ -103,36 +105,36 @@ Eigen::MatrixXd Game::getGameData(Snake& snake, int index)
 
 	if (m_grid[index].isThereAFruit(pos_x, pos_y, Direction::RIGHT))
 	{
-		data(0) = 2;
+		data(4) = 1;
 	}
 	if (m_grid[index].isThereAFruit(pos_x, pos_y, Direction::LEFT))
 	{
-		data(1) = 2;
+		data(5) = 1;
 	}
 	if (m_grid[index].isThereAFruit(pos_x, pos_y, Direction::TOP))
 	{
-		data(2) = 2;
+		data(6) = 1;
 	}
 	if (m_grid[index].isThereAFruit(pos_x, pos_y, Direction::BOTTOM))
 	{
-		data(3) = 2;
+		data(7) = 1;
 	}
 
 	if (m_grid[index].isThereMyBody(pos_x, pos_y, Direction::RIGHT) && snake.getDirection() != Direction::LEFT)
 	{
-		data(0) = 3;
+		data(8) = 1;
 	}
 	if (m_grid[index].isThereMyBody(pos_x, pos_y, Direction::LEFT) && snake.getDirection() != Direction::RIGHT)
 	{
-		data(1) = 3;
+		data(9) = 1;
 	}
 	if (m_grid[index].isThereMyBody(pos_x, pos_y, Direction::TOP) && snake.getDirection() != Direction::BOTTOM)
 	{
-		data(2) = 3;
+		data(10) = 1;
 	}
 	if (m_grid[index].isThereMyBody(pos_x, pos_y, Direction::BOTTOM) && snake.getDirection() != Direction::TOP)
 	{
-		data(3) = 3;
+		data(11) = 1;
 	}
 
 	// return the "input" MatrixXd
@@ -143,29 +145,24 @@ std::vector<Eigen::MatrixXd> Game::crossOverWeights(const std::vector<Eigen::Mat
 {
 	std::vector<Eigen::MatrixXd> temp = second;
 	
-	// loop through all the weights
-	for (int i{ 0 }; i < static_cast<int>(temp.size()); i++)
+	int random{ static_cast<int>(rand() % second.size()) }; // find a random layer of weights
+
+	for (int i{ random }; i < second.size(); i++)
 	{
-		for (int j{ 0 }; j < static_cast<int>(temp[i].size()); j++)
-		{
-			if (j % 2 == 0)
-				temp[i].coeffRef(j) = first[i](j);
-		}
-	}	
+		temp[i] = first[i]; // change every layers after by another one
+	}
 	return temp;
 }
 // similar to the crossOverWeights
 std::vector<Eigen::VectorXd> Game::crossOverBiases(const std::vector<Eigen::VectorXd>& second, const std::vector<Eigen::VectorXd>& first)
 {
 	std::vector<Eigen::VectorXd> temp = second;
-	for (int i{ 0 }; i < static_cast<int>(temp.size()); i++)
+
+	int random{ static_cast<int>(rand() % second.size()) };
+
+	for (int i{ random }; i < second.size(); i++)
 	{
-		for (int j{ 0 }; j < static_cast<int>(temp[i].size()); j++)
-		{
-			if (j % 2 == 0)
-				temp[i].coeffRef(j) = first[i](j);
-		}
-		
+		temp[i] = first[i];
 	}
 
 	return temp;
@@ -176,7 +173,7 @@ void Game::setNewGeneration()
 	// create a vector of pair and links the players to their points
 	std::vector<std::pair<std::unique_ptr<NeuralNetwork>, int>> paired_vector;
 	// loop for add to the previous vector the pairs
-	for (int i{ 0 }; i < m_number_player; i++)
+	for (int i{ 0 }; i < m_number_population; i++)
 	{
 		// make_pair to create a pair and std::move to move the content of each unique_ptr to the paired_vector
 		paired_vector.push_back(std::make_pair(std::move(m_players[i]), m_points[i]));
@@ -184,28 +181,50 @@ void Game::setNewGeneration()
 	// sort the paired_vector relatively to the points
 	std::sort(paired_vector.begin(), paired_vector.end(), [](const auto& a, const auto& b) { return a.second > b.second; });
 
-	// crossOver the bests
-	int best{ static_cast<int>(m_number_player * 0.1f) };
-	int new_player{ static_cast<int>(m_number_player * 0.2f) };
 
-	for (int i{ best }; i < m_number_player - new_player; i++)
+	int best{ static_cast<int>(m_number_population * 0.3f) }; // We keep 30% of the bests
+	int new_player{ static_cast<int>(m_number_population * 0.2f) }; // We have 20% of new players
+	// The lasts will be reproduced by the firsts
+
+	// loop through the reproduced snakes
+	for (int i{ best }; i < m_number_population - new_player; i++)
 	{
-		int random1{ rand() % (best + 1) };
+		int random1{ rand() % best + 1 }; // find one parents from the best snakes
 		int random2{};
-		do {
-			random2 = rand() % (best + 1);
-		} while (random2 == random1);
-		
+		do
+		{
+			random2 = rand() % best + 1; // find another which is not the same
+		} while(random2 == random1);
+
+		// crossOver weights and biases
 		paired_vector[i].first.get()->setWeigths(crossOverWeights(paired_vector[random2].first.get()->getWeigths(), paired_vector[random1].first.get()->getWeigths()));
 		paired_vector[i].first.get()->setBiases(crossOverBiases(paired_vector[random2].first.get()->getBiases(), paired_vector[random1].first.get()->getBiases()));
 
-		paired_vector[i].first.get()->setWeigths(mutationWeights(paired_vector[i].first.get()->getWeigths()));
-		paired_vector[i].first.get()->setBiases(mutationBiases(paired_vector[i].first.get()->getBiases()));
 	}
-	for (int i{ m_number_player - new_player }; i < m_number_player; i++)
+
+	// create new players
+	for (int i{ m_number_population - new_player }; i < m_number_population; i++)
 	{
 		paired_vector[i].first.get()->init();
 	}
+
+
+	// loop through all snakes and apply some mutations
+	for (int i{ 0 }; i < m_number_population; i++)
+	{
+		// 5% to have a mutation
+		int random{ rand() % 100 };
+		if (random/100.f <= 0.05) 
+		{
+			paired_vector[i].first.get()->setWeigths(mutationWeights(paired_vector[i].first.get()->getWeigths()));
+		}	
+		random = rand() % 100;
+		if (random/100.f <= 0.05)
+		{
+			paired_vector[i].first.get()->setBiases(mutationBiases(paired_vector[i].first.get()->getBiases()));
+		}
+	}
+	
 	
 	// reassign each value to the m_players vector
 	for (int i{ 0 }; i < m_players.size(); i++)
@@ -213,9 +232,13 @@ void Game::setNewGeneration()
 		m_players[i] = std::move(paired_vector[i].first);
 	}
 
+	// shuffle the vector
+	std::shuffle(m_players.begin(), m_players.end(), std::random_device());
+
 	m_generation++;
+	m_best_score = 0;
 	// reset the class Game using the operator=
-	*this = { m_number_player };
+	*this = { m_number_population };
 }
 
 std::vector<Eigen::MatrixXd> Game::mutationWeights(const std::vector<Eigen::MatrixXd>& mutation_layer)
@@ -246,12 +269,11 @@ std::vector<Eigen::VectorXd> Game::mutationBiases(const std::vector<Eigen::Vecto
 
 void Game::update()
 {
-	// loop through all players
-	for (int i{ 0 }; i < static_cast<int>(m_players.size()); i++)
+	for (int i{ 0 }; i < m_number_population; i++)
 	{
 		m_grid[i].initObjectsGrid();
 		// check if the snake not lost
-		if (!checkLost(m_snakes[i]) && m_step[i] <= 200 && !m_lost[i])
+		if (!checkLost(m_snakes[i]) && m_step[i] <= 300)
 		{
 			for (const auto& position : m_snakes[i].getAllBodyPosition())
 				m_grid[i].addObjectInTheGrid(3, static_cast<int>(position.x), static_cast<int>(position.y));
@@ -276,46 +298,54 @@ void Game::update()
 				m_points[i]++;
 				m_step[i] = 0;
 			}
+
 			m_step[i]++;
+
 		}
-		else if(!m_lost[i]) // if the snake lost
+		else
 		{
-			m_points[i]--;
+			if (m_step[i] >= 300)
+			{
+				m_points[i]--;
+			}
 			m_lost[i] = true; // turn to true the value and the snake can't move anymore
-		}			
+		}
 			
+		
 	}
-	if (m_lost[0] && std::equal(m_lost.begin() + 1, m_lost.end(), m_lost.begin())) // if all snakes lost
+
+	if (std::all_of(m_lost.begin(), m_lost.end(), [](bool v) { return v; }))// if the snake lost
 	{
 		setNewGeneration(); // set the new generation and reset the class
 	}
+	
+	
 	// each time the function is called and after all movements, search for the first snake of the game
 	m_index_first_snake = static_cast<int>(std::distance(m_points.begin(), std::max_element(m_points.begin(), m_points.end())));
 	// and print his score
 	if (m_best_score <= m_points[m_index_first_snake])
 		m_best_score = m_points[m_index_first_snake];
-	m_text_generation->setString(sf::String("Génération : " + std::to_string(m_generation) + "\nPopulation : " + std::to_string(m_number_player)
+
+	m_text_generation->setString(sf::String("Génération : " + std::to_string(m_generation) + "\nPopulation :" + std::to_string(m_number_population)
 	+ "\nBest score: " + std::to_string(m_best_score)));
 }
 
 void Game::drawGame(sf::RenderWindow& win)
 {
-	// for each snake of the game
-	for (int i{ 0 }; i < static_cast<int>(m_snakes.size()); i++)
+	for (int i{ 0 }; i < m_number_population; i++)
 	{
 		if (!m_lost[i])
+		{
 			m_snakes[i].draw(win);
-	}
+			m_fruits[i].drawFruit(win);
+		}
 		
+	}
 	m_text_generation->drawText(win); // draw the text
 
-	for (int i{ 0 }; i < static_cast<int>(m_fruits.size()); i++)
-	{
-		if (!m_lost[i])
-			m_fruits[i].drawFruit(win);
-
-	}
-
+	
+	
+	//m_grid[m_current_player].printGrid();
 	//m_grid[0].drawGrid(win);
 }
 

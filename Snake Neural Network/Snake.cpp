@@ -25,7 +25,7 @@ Snake::Snake()
 	m_head.setPosition(sf::Vector2f(CONV_CASE_WIDTH * m_position.x, CONV_CASE_HEIGHT * m_position.y));
 
 	// default number of body => 4 squares
-	m_body.resize(4);
+	m_body.resize(2);
 	// for each square of the body
 	for (int i{ 0 }; i < static_cast<int>(m_body.size()); i++)
 	{
@@ -139,6 +139,7 @@ void Snake::addBody()
 
 const sf::Vector2f Snake::getSize() { return m_size; }
 const sf::Vector2f Snake::getHeadPosition() { return m_head.getPosition(); }
+const sf::Vector2f Snake::getPosition() { return m_position; }
 
 const sf::RectangleShape Snake::getHead()
 {

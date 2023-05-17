@@ -116,7 +116,7 @@ void NeuralNetwork::initWeights()
 	for (int i{ 1 }; i < static_cast<int>(m_layer.size()); i++)
 	{
 		// create random value of weights
-		m_weights.push_back(Eigen::MatrixXd::Random(m_layer[i], m_layer[i - 1]));
+		m_weights.push_back(1000 * Eigen::MatrixXd::Random(m_layer[i], m_layer[i - 1]));
 	}
 }
 
@@ -125,6 +125,7 @@ void NeuralNetwork::initBiases()
 	for (int i{ 1 }; i < static_cast<int>(m_layer.size()); i++)
 	{
 		// create random value of biases
-		m_biases.push_back(Eigen::VectorXd::Random(m_layer[i], 1));
+		//m_biases.push_back(Eigen::VectorXd::Random(m_layer[i], 1));
+		m_biases.push_back(Eigen::VectorXd::Zero(m_layer[i], 1));
 	}
 }

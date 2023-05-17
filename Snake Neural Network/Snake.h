@@ -38,6 +38,7 @@ public:
 	const sf::RectangleShape getHead();
 	bool isThereHisBody();
 	Direction getDirection();
+	const sf::Vector2f getPosition();
 
 	std::vector<sf::Vector2f> getAllBodyPosition();
 };
